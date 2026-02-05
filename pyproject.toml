@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "sdmf"
-version = "0.1.7"
+version = "0.1.8"
 description = "SDMF - Standard Data Management Framework"
 readme = "README.md"
 requires-python = ">=3.9"
@@ -30,12 +30,12 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/yalsworldofficial/standard-data-management-framework"
-Repository = "https://github.com/yalsworldofficial/standard-data-management-framework"
-Documentation = "https://github.com/yalsworldofficial/standard-data-management-framework#readme"
-Changelog = "https://github.com/yalsworldofficial/standard-data-management-framework/blob/main/CHANGELOG.md"
-Issues = "https://github.com/yalsworldofficial/standard-data-management-framework/issues"
-License = "https://github.com/yalsworldofficial/standard-data-management-framework/blob/main/LICENSE"
+Homepage = "https://github.com/hhandoo/sdmf-official"
+Repository = "https://github.com/hhandoo/sdmf-official"
+Documentation = "https://github.com/hhandoo/sdmf-official#readme"
+Changelog = "https://github.com/hhandoo/sdmf-official/blob/main/CHANGELOG.md"
+Issues = "https://github.com/hhandoo/sdmf-official/issues"
+License = "https://github.com/hhandoo/sdmf-official/blob/main/LICENSE"
 
 
 [tool.setuptools.packages.find]

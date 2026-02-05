@@ -20,6 +20,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [0.1.8] - 2026-02-05
+
+### Changed
+- Changed Repo from yalsworldofficial to hhandoo
+
+---
+
 ## [0.1.7] - 2026-02-04
 
 ### Added
