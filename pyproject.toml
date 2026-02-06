@@ -26,7 +26,8 @@ dependencies = [
   "openpyxl",
   "matplotlib",
   "delta-spark",
-  "numpy"
+  "numpy",
+  "requests"
 ]
 
 [project.urls]
