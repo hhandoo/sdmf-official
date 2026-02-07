@@ -25,7 +25,11 @@ class LoggingConfig:
     def configure(self):
         root = logging.getLogger()
         root.setLevel(self.level)
-        if any(isinstance(h, logging.StreamHandler) for h in root.handlers):
+        if any(
+            isinstance(h, TimedRotatingFileHandler)
+            and h.baseFilename == self.log_file
+            for h in root.handlers
+        ):
             return
         console_handler = logging.StreamHandler(sys.stdout)
         console_handler.setFormatter(logging.Formatter("[%(asctime)s] [%(levelname)s] - %(message)s"))
@@ -55,23 +59,16 @@ class LoggingConfig:
         if not self.log_file:
             print("No log file defined, skipping move")
             return
-
         if not os.path.exists(self.log_file):
             print(f"Log file does not exist, skipping move: {self.log_file}")
             return
-
         final_dir = self.final_log_dir
         os.makedirs(final_dir, exist_ok=True)
-
         src = os.path.abspath(self.log_file)
         dst = os.path.abspath(os.path.join(final_dir, os.path.basename(src)))
-
-        # 🔥🔥 YEHI MAIN FIX HAI 🔥🔥
         if src == dst:
             print("Temp log dir and final log dir are the same. Skipping move.")
             return
-
-        # Case 1: dbutils (Databricks) — optional
         try:
             import dbutils  # type: ignore
             if dst.startswith("/dbfs"):
@@ -80,14 +77,9 @@ class LoggingConfig:
                 return
         except Exception:
             pass
-
-        # Case 2: local or /dbfs
         shutil.copyfile(src, dst)
         print(f"Log file moved to: {dst}")
 
-
-
-    
     def cleanup_final_logs(self):
         cutoff_date = datetime.now() - timedelta(days=self.retention_days)
         for filename in os.listdir(self.final_log_dir):
