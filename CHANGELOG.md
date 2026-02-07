@@ -18,6 +18,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ### Fixed
 - 
 
+## [0.1.13] - 2026-02-07
+
+### Fixed
+- log issue
+
 ---
 
 ## [0.1.12] - 2026-02-07

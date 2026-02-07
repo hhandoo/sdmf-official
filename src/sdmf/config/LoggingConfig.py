@@ -14,7 +14,7 @@ class LoggingConfig:
         self.level = logging.INFO
         self.run_id = run_id
         self.retention_days = int(config['DEFAULT']['log_retention_policy_in_days'])
-        self.final_log_dir = os.path.join(config['DEFAULT']['file_hunt_path'], config['DEFAULT']['log_directory_name'])
+        self.final_log_dir = os.path.join(config['DEFAULT']['log_base_path'], config['DEFAULT']['log_directory_name'])
         self.temp_log_dir = os.path.join(config['DEFAULT']['temp_directory'], config['DEFAULT']['log_directory_name'])
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         self.log_file = os.path.join(self.temp_log_dir, f"sdmf_log_{self.run_id}_{timestamp}.log")
@@ -34,6 +34,11 @@ class LoggingConfig:
         file_handler = TimedRotatingFileHandler(self.log_file, when="midnight", interval=1, backupCount=0, encoding="utf-8")
         file_handler.setFormatter(logging.Formatter("[%(asctime)s] [%(name)s] [%(levelname)s] - %(message)s"))
         root.addHandler(file_handler)
+
+        logging.getLogger("py4j").setLevel(logging.WARN)
+        logging.getLogger("pyspark").setLevel(logging.WARN)
+        logging.getLogger("org.apache.spark").setLevel(logging.WARN)
+
         self.cleanup_old_logs()
 
     def cleanup_old_logs(self):
@@ -58,24 +63,28 @@ class LoggingConfig:
         final_dir = self.final_log_dir
         os.makedirs(final_dir, exist_ok=True)
 
-        src = self.log_file
-        dst = os.path.join(final_dir, os.path.basename(src))
+        src = os.path.abspath(self.log_file)
+        dst = os.path.abspath(os.path.join(final_dir, os.path.basename(src)))
 
-        # Case 1: dbutils is available (Databricks)
+        # 🔥🔥 YEHI MAIN FIX HAI 🔥🔥
+        if src == dst:
+            print("Temp log dir and final log dir are the same. Skipping move.")
+            return
+
+        # Case 1: dbutils (Databricks) — optional
         try:
             import dbutils  # type: ignore
-
             if dst.startswith("/dbfs"):
                 dbutils.fs.cp(f"file:{src}", f"dbfs:{dst.replace('/dbfs', '')}")
                 print(f"Log file moved to (DBFS): {dst}")
                 return
         except Exception:
-            # dbutils not available or failed → fall back to shutil
             pass
 
-        # Case 2: local filesystem or /dbfs mount
+        # Case 2: local or /dbfs
         shutil.copyfile(src, dst)
         print(f"Log file moved to: {dst}")
+
 
 
     
