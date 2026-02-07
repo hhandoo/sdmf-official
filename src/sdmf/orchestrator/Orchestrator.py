@@ -32,9 +32,9 @@ class Orchestrator:
         self.file_hunt_path = config["DEFAULT"]["file_hunt_path"]
         self.system_run_report = pd.DataFrame()
         self.logger.info(f"Current Run Id: {self.run_id}")
-        # self.logger.info(
-        #     f'Is FAIR: {spark.sparkContext.getConf().get("spark.scheduler.mode")}'
-        # )
+        self.logger.info(
+            f'Is FAIR: {spark.sparkContext.getConf().get("spark.scheduler.mode")}'
+        )
 
     def __system_prerequisites(self) -> bool:
         my_SystemLaunchValidator = SystemLaunchValidator(

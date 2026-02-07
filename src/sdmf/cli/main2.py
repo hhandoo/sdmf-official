@@ -48,5 +48,5 @@ spark = (
 
 
 
-spark.sql('select * from bronze.t_test2').show(truncate=False)
+spark.sql('select * from bronze.t_iso_language_codes_raw').show(truncate=False)
 
