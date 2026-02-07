@@ -20,7 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
-## [0.1.10] - 2026-02-07
+## [0.1.11] - 2026-02-07
 
 ### Fixed
 - Parquet read issue
