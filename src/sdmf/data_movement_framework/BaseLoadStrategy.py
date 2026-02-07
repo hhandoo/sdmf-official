@@ -43,32 +43,22 @@ class BaseLoadStrategy(ABC):
     def _normalize_column_names(self, df: DataFrame) -> DataFrame:
         for col in df.columns:
             clean = col.strip().lower()
-
-            # replace anything not a–z, 0–9, _ with _
             clean = re.sub(r"[^a-z0-9_]", "_", clean)
-
-            # collapse multiple underscores
             clean = re.sub(r"_+", "_", clean)
-
-            # optional: remove leading/trailing underscores
             clean = clean.strip("_")
-
             if clean != col:
                 df = df.withColumnRenamed(col, clean)
-
         return df
 
-    def _enforce_schema(self, df: DataFrame, schema: StructType):
-        return df.select(
-            *[
-                (
-                    F.col(f.name).cast(f.dataType).alias(f.name)
-                    if f.name in df.columns
-                    else F.lit(None).cast(f.dataType).alias(f.name)
-                )
-                for f in schema.fields
-            ]
-        )
+    def _enforce_schema(self, df: DataFrame, schema: StructType)-> DataFrame:
+        self.logger.info("Enforcing target schema on extracted DataFrame...")
+        self.logger.info(f"Target Schema: {schema.simpleString()}")
+        for field in schema.fields:
+            if field.name not in df.columns:
+                df = df.withColumn(field.name, F.col(field.name).cast(field.dataType))
+            else:
+                df = df.withColumn(field.name, F.col(field.name).cast(field.dataType))
+        return df.select([f.name for f in schema.fields])
 
     def execute(self) -> LoadResult:
         """
