@@ -98,6 +98,7 @@ class APIExtractor(BaseLoadStrategy):
             f.write(parquet_bytes.getbuffer())
         self.logger.info("Parquet loaded in memory at %s", file_path)
         spark_path = file_path.replace("/dbfs", "dbfs:")
+        self.logger.info("Reading Parquet into Spark from %s", spark_path)
         return self.spark.read.parquet(spark_path)
 
     def __fetch_response(self) -> requests.Response:

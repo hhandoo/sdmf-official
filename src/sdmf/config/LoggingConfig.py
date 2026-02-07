@@ -45,12 +45,38 @@ class LoggingConfig:
                 if file_time < cutoff_date:
                     os.remove(file_path)
                     print(f"Deleted old log file: {file_path}")
-
-    
+                    
     def move_logs_to_final_location(self):
-        final_path = os.path.join(self.final_log_dir, os.path.basename(self.log_file))
-        shutil.copyfile(self.log_file, final_path)
-        print(f"Log file moved to: {final_path}")
+        if not self.log_file:
+            print("No log file defined, skipping move")
+            return
+
+        if not os.path.exists(self.log_file):
+            print(f"Log file does not exist, skipping move: {self.log_file}")
+            return
+
+        final_dir = self.final_log_dir
+        os.makedirs(final_dir, exist_ok=True)
+
+        src = self.log_file
+        dst = os.path.join(final_dir, os.path.basename(src))
+
+        # Case 1: dbutils is available (Databricks)
+        try:
+            import dbutils  # type: ignore
+
+            if dst.startswith("/dbfs"):
+                dbutils.fs.cp(f"file:{src}", f"dbfs:{dst.replace('/dbfs', '')}")
+                print(f"Log file moved to (DBFS): {dst}")
+                return
+        except Exception:
+            # dbutils not available or failed → fall back to shutil
+            pass
+
+        # Case 2: local filesystem or /dbfs mount
+        shutil.copyfile(src, dst)
+        print(f"Log file moved to: {dst}")
+
 
     
     def cleanup_final_logs(self):
