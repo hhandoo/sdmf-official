@@ -15,7 +15,7 @@ class LoggingConfig:
         self.run_id = run_id
         self.retention_days = int(config['DEFAULT']['log_retention_policy_in_days'])
         self.final_log_dir = os.path.join(config['DEFAULT']['file_hunt_path'], config['DEFAULT']['log_directory_name'])
-        self.temp_log_dir = os.path.join(config['DEFAULT']['temp_log_location'], config['DEFAULT']['log_directory_name'])
+        self.temp_log_dir = os.path.join(config['DEFAULT']['temp_directory'], config['DEFAULT']['log_directory_name'])
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         self.log_file = os.path.join(self.temp_log_dir, f"sdmf_log_{self.run_id}_{timestamp}.log")
         os.makedirs(self.temp_log_dir, exist_ok=True)

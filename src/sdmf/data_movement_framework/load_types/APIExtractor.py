@@ -89,7 +89,7 @@ class APIExtractor(BaseLoadStrategy):
         response = self.__fetch_response()
         parquet_bytes = BytesIO(response.content)
         tmp_dir = os.path.join(
-            self.config.config['DEFAULT']['temp_log_location'],
+            self.config.config['DEFAULT']['temp_directory'],
             f'api_parquet_mem_{uuid.uuid4().hex}'
             )
         os.makedirs(tmp_dir, exist_ok=True)
