@@ -33,7 +33,7 @@ class Orchestrator:
         self.system_run_report = pd.DataFrame()
         self.logger.info(f"Current Run Id: {self.run_id}")
         self.logger.info(
-            f'Is FAIR: {spark.sparkContext.getConf().get("spark.scheduler.mode")}'
+            f'spark.scheduler.mode: {spark.sparkContext.getConf().get("spark.scheduler.mode")}'
         )
 
     def __system_prerequisites(self) -> bool:
@@ -53,6 +53,7 @@ class Orchestrator:
 
     def run(self):
         self.logger.info("Ensuring system readiness...")
+        self.logger.warning("All feeds from external sources will be dumped to the bronze (raw) layer, their validation may be skipped.")
         is_system_ready = self.__system_prerequisites()
         if is_system_ready == True:
 
