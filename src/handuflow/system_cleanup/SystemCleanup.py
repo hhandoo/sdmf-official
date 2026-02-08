@@ -1,18 +1,16 @@
 # inbuilt
 import os
-import logging
 import configparser
 from datetime import datetime, timedelta
-
 
 # external
 import pandas as pd
 
 
 class SystemCleanup:
-    def __init__(self, config: configparser.ConfigParser, master_specs: pd.DataFrame) -> None:
-        self.logger = logging.getLogger(__name__)
-        self.logger.info("Starting system cleanup process...")
+    def __init__(
+        self, config: configparser.ConfigParser, master_specs: pd.DataFrame
+    ) -> None:
         self.config = config
         self.master_specs = master_specs
         self.retention_days = int(config["DEFAULT"]["retention_policy_in_days"])
@@ -33,9 +31,7 @@ class SystemCleanup:
         )
 
     def run(self):
-        self.logger.info("Removing old logs...")
         self.__remove_old_logs()
-        self.logger.info("Removing old outputs...")
         self.__remove_old_outputs()
 
     def __remove_old_logs(self):
@@ -45,12 +41,12 @@ class SystemCleanup:
             if os.path.isfile(path):
                 if datetime.fromtimestamp(os.path.getmtime(path)) < cutoff:
                     os.remove(path)
-                    self.logger.warning(f"Removed old log file: {path}")
+                    print(f"Removed old log file: {path}")
         for f in os.listdir(self.temp_log_dir):
             path = os.path.join(self.temp_log_dir, f)
             if os.path.isfile(path):
                 os.remove(path)
-                self.logger.warning(f"Removed old log file: {path}")
+                print(f"Removed old log file: {path}")
 
     def __remove_old_outputs(self):
         cutoff = datetime.now() - timedelta(days=self.retention_days)
@@ -59,7 +55,7 @@ class SystemCleanup:
             if os.path.isfile(path):
                 if datetime.fromtimestamp(os.path.getmtime(path)) < cutoff:
                     os.remove(path)
-                    self.logger.warning(f"Removed old output file: {path}")
+                    print(f"Removed old output file: {path}")
 
     def __enforce_delta_retention_for_all_tables(self):
         pass

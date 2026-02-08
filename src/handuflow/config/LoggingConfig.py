@@ -3,7 +3,7 @@ import sys
 import shutil
 import logging
 import configparser
-from datetime import datetime, timedelta
+from datetime import datetime
 from logging.handlers import TimedRotatingFileHandler
 
 
@@ -61,6 +61,7 @@ class LoggingConfig:
 
 
     def move_logs_to_final_location(self):
+        print(f"Moving log file from {self.log_file} to {self.final_log_dir}")
         if not self.log_file or not os.path.exists(self.log_file):
             return
         for h in list(self.logger.handlers):
@@ -70,7 +71,4 @@ class LoggingConfig:
 
         dst = os.path.join(self.final_log_dir, os.path.basename(self.log_file))
 
-        try:
-            shutil.copy2(self.log_file, dst)
-        except FileNotFoundError:
-            pass
+        shutil.copy2(self.log_file, dst)
