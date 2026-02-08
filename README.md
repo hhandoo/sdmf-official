@@ -1,28 +1,109 @@
-# Standard Data Management Framework (SDMF)
+# HanduFlow
 
-A **modular, scalable, and Python-based Data Management Framework** designed to standardize **data ingestion, validation, transformation, metadata handling, and storage** across enterprise workflows.
+**HanduFlow** is an architecture-agnostic data movement and transformation framework designed to manage evolving data reliably across modern data platforms.
 
-This framework eliminates repetitive boilerplate and provides a consistent structure for building reliable, maintainable data pipelines.
+It provides a standardized way to ingest, transform, and evolve data across layers (for example, bronze → silver → gold), while supporting change data capture (CDC), SCD Type 2, schema enforcement, and automated lineage generation.
 
-## About
+HanduFlow focuses on **consistency, reusability, and production readiness**, without locking users into a specific architecture or vendor.
 
-Created and maintained by **Harsh Handoo**, Data Engineer, SDMF is designed to standardize common data movement patterns and reduce boilerplate in real-world Spark workloads.
+---
 
-SDMF (Standard Data Management Framework) is an open-source Spark-based data engineering framework built for reliable, production-grade data pipelines. It focuses on schema enforcement, incremental processing, and SCD Type-2 handling using Delta Lake.
+## Why HanduFlow?
 
-## Features
+Modern data platforms commonly struggle with:
 
-- **Modular Design** – Plug-and-play components for ingestion, validation, transformation, and storage.
-- **Schema Alignment & Partitioning** – Built-in support for CDC (Change Data Capture) and MERGE operations.
-- **Metadata Management** – Centralized handling of feed specifications and lineage.
-- **Scalable** – Works seamlessly with **Spark**, **Delta Lake**, and distributed environments like **Databricks**.
-- **Logging & Monitoring** – Custom logging with retention and rotation policies.
+* Inconsistent CDC implementations
+* Repeated and fragile SCD logic
+* Hard-to-maintain transformation pipelines
+* Missing or incomplete data lineage
 
-## Installation - test
+HanduFlow centralizes these concerns into a **single, reusable framework**, allowing teams to focus on business logic instead of rebuilding data plumbing for every pipeline.
+
+---
+
+## Key Capabilities
+
+### Data Movement & Load Patterns
+
+HanduFlow supports multiple ingestion and evolution strategies:
+
+* **Full Load**
+* **Append Load**
+* **Incremental CDC**
+* **SCD Type 2**
+
+All load patterns follow a consistent, configurable execution model across datasets.
+
+---
+
+### Architecture-Agnostic Design
+
+HanduFlow works naturally with **Medallion-style architectures**, but it is **not dependent** on any specific architectural pattern.
+
+It can be used with:
+
+* Bronze / Silver / Gold layers
+* Hub-and-spoke models
+* Custom layered designs
+* Single-layer analytical tables
+
+---
+
+### Transformation Framework
+
+* Clear separation of ingestion, validation, transformation, and persistence
+* Reusable transformation logic
+* Declarative and programmatic execution styles
+
+---
+
+### Schema & Data Quality Enforcement
+
+* Schema alignment and enforcement at ingestion
+* Built-in standard data quality checks
+* Support for custom, query-based validations
+* Pre-load and post-load validation stages
+
+---
+
+### Lineage Generation
+
+HanduFlow can generate **feed-level lineage**, including:
+
+* Source datasets
+* Intermediate transformations
+* Target tables
+
+Lineage output can be exported for visualization and governance use cases.
+
+---
+
+## Technology Stack
+
+HanduFlow is designed for distributed, production-grade environments:
+
+* **Apache Spark**
+* **Delta Lake**
+* Cloud object storage (S3 / ADLS / GCS)
+* Databricks (tested environment)
+
+---
+
+## About the Project
+
+HanduFlow is created and maintained by **Harsh Handoo**, Data Engineer. Thats why the name "handuflow", pronounced "hundooh-flow"
+
+The framework was built to standardize common data movement patterns, reduce boilerplate, and improve reliability in real-world Spark and Delta Lake workloads.
+
+---
+
+## Installation
 
 ```bash
-pip install sdmf
+pip install handuflow
 ```
+
+---
 
 ## Requirements
 
@@ -35,47 +116,61 @@ pip install sdmf
 | Medium datasets (10–100M rows) | 4 executors × 8 GB   | 8 executors × 16 GB     |
 | Large datasets (>100M rows)    | 8+ executors × 16 GB | Cluster-specific tuning |
 
+---
+
 ### Recommended Production Setup
 
-- Linux-based Spark cluster
-- Spark FAIR scheduler enabled
-- Delta Lake tables stored on cloud object storage
-- Versioned releases via PyPI + GitHub Releases
+* Linux-based Spark cluster
+* Spark FAIR scheduler enabled
+* Delta Lake tables on cloud object storage
+* Versioned releases via PyPI and GitHub
 
-### Storage
+---
 
-- Local filesystem (dev only)
-- HDFS / ADLS / S3 / GCS (recommended)
-- DBFS (Databricks)
+### Supported Storage
 
-### Operating System
+* Local filesystem (development only)
+* HDFS / ADLS / S3 / GCS (recommended)
+* DBFS (Databricks)
 
-- Linux (recommended)
-- macOS
-- Windows (WSL recommended for local development)
+---
+
+### Operating Systems
+
+* Linux (recommended)
+* macOS
+* Windows (WSL recommended)
 
 ⚠️ Production deployments are strongly recommended on Linux-based systems.
 
-Note: **This library is tested on databricks.**
+**Note:** HanduFlow is currently tested on Databricks.
+
+---
 
 ## Usage
 
-## Prerequisites
+### Prerequisites
 
-- Dedicate a directory to SDMF. Example: /sdmf_dir/
-- Setup `config.ini` file.
+1. Create a dedicated directory for HanduFlow configuration and metadata
+   Example:
+
+   ```bash
+   /handuflow_dir/
+   ```
+
+2. Configure `config.ini`
 
     ```ini
     [DEFAULT]
-    outbound_directory_name=sdmf_outbound
-    log_directory_name=sdmf_logs
-    temp_log_location=/sdmf_dir/temp
-    file_hunt_path=/sdmf_dir/
+    outbound_directory_name=handuflow_outbound
+    log_directory_name=handuflow_logs
+    temp_log_location=/handuflow_dir/temp
+    file_hunt_path=/handuflow_dir/
     log_retention_policy_in_days=7
     max_concurrent_batches=4
 
     [FILES]
-    master_spec_name = master_specs.xlsx
+    master_spec_name=master_specs.xlsx
 
     [LINEAGE_DIAGRAM]
     BOX_WIDTH=4.4
@@ -85,168 +180,101 @@ Note: **This library is tested on databricks.**
     ROOT_GAP=2.0
     ```
 
-- Setup Master Spec `master_spec.xlsx` (can be renamed in config) file.
+---
 
-  - feed_id
-  - system_name
-  - subsystem_name
-  - category
-  - sub_category
-  - data_flow_direction
-  - residing_layer
-  - feed_name
-  - feed_type
-  - feed_specs
-  - load_type
-  - target_unity_catalog
-  - target_schema_name
-  - target_table_name
-  - suggested_feed_name
-  - parallelism_group_number
-  - parent_feed_id
-  - is_active
+### Master Specification
 
-- Feed Spec JSON
+The master specification file (`master_specs.xlsx`) defines feeds and dependencies.
 
-    ```json
+Required fields include:
+
+* feed_id
+* system_name
+* subsystem_name
+* category
+* data_flow_direction
+* residing_layer
+* feed_name
+* load_type
+* target_schema_name
+* target_table_name
+* parent_feed_id
+* is_active
+
+---
+
+### Feed Specification (JSON)
+
+Each feed defines schema, quality checks, and load behavior.
+
+```json
+{
+  "primary_key": "col1",
+  "partition_keys": [],
+  "vacuum_hours": 168,
+  "source_table_name": "test.test",
+  "selection_schema": {
+    "type": "struct",
+    "fields": [
+      { "name": "col1", "type": "string", "nullable": true },
+      { "name": "col2", "type": "string", "nullable": true }
+    ]
+  },
+  "standard_checks": [
     {
-        "primary_key": "col1",
-        "composite_key": [],
-        "partition_keys": [],
-        "vacuum_hours": 168,
-        "source_table_name": "test.test",
-        "selection_query":null,
-        "selection_schema": {
-            "type": "struct",
-            "fields": [
-                {
-                    "name": "col1",
-                    "type": "string",
-                    "nullable": true,
-                    "metadata": {
-                        "comment": "test"
-                    }
-                },
-                {
-                    "name": "col2",
-                    "type": "string",
-                    "nullable": true,
-                    "metadata": {
-                        "comment": "test"
-                    }
-                },
-                {
-                    "name": "col3",
-                    "type": "string",
-                    "nullable": true,
-                    "metadata": {
-                        "comment": "test"
-                    }
-                },
-                {
-                    "name": "col4",
-                    "type": "string",
-                    "nullable": true,
-                    "metadata": {
-                        "comment": "test"
-                    }
-                }
-            ]
-        },
-        "standard_checks": [
-            {
-                "check_sequence": [
-                    "_check_primary_key"
-                ],
-                "column_name": "col1",
-                "threshold": 0
-            },
-            {
-                "check_sequence": [
-                    "_check_nulls"
-                ],
-                "column_name": "col2",
-                "threshold": 0
-            }
-        ],
-        "comprehensive_checks": [
-            {
-                "check_name": "Some unique check name",
-                "query": "Select 1;",
-                "severity": "WARNING",
-                "threshold": 0,
-                "load_stage": "PRE_LOAD",
-                "dependency_dataset": []
-            },
-            {
-                "check_name": "Some unique check name 1",
-                "query": "Select 1;",
-                "severity": "WARNING",
-                "threshold": 0,
-                "load_stage": "PRE_LOAD",
-                "dependency_dataset": []
-            },
-            {
-                "check_name": "Some unique check name 2",
-                "query": "Select 1;",
-                "severity": "WARNING",
-                "threshold": 0,
-                "load_stage": "PRE_LOAD",
-                "dependency_dataset": []
-            },
-            {
-                "check_name": "Some unique check name 3",
-                "query": "Select 1;",
-                "severity": "WARNING",
-                "threshold": 0,
-                "load_stage": "POST_LOAD",
-                "dependency_dataset": [
-                    "demo.customers"
-                ]
-            }
-        ]
+      "check_sequence": ["_check_primary_key"],
+      "column_name": "col1",
+      "threshold": 0
     }
-    ```
+  ]
+}
+```
 
-- Ensure Spark FAIR scheduler is enabled.
+---
 
-    ```bash
-    #!/bin/bash
+### Spark Configuration (FAIR Scheduler)
 
-    echo "Configuring Spark FAIR scheduler..."
+```bash
+spark.scheduler.mode FAIR
+```
 
-    cat <<EOF >> /databricks/spark/conf/spark-defaults.conf
-    spark.scheduler.mode FAIR
-    EOF
+```python
+from pyspark.sql import SparkSession
 
-    echo "Spark FAIR scheduler enabled."
-    ```
+spark = (
+    SparkSession.builder
+        .appName("HanduFlow")
+        .config("spark.scheduler.mode", "FAIR")
+        .getOrCreate()
+)
+```
 
-    ```python
-    from pyspark.sql import SparkSession
-
-    spark = (
-        SparkSession.builder
-            .appName("SDMF")
-            .config("spark.scheduler.mode", "FAIR")
-            .getOrCreate()
-    )
-    ```
+---
 
 ## Execution
 
 ```python
 import configparser
-from sdmf import Orchestrator
-
-spark # available spark session
+from handuflow import Orchestrator
 
 cfg = configparser.ConfigParser()
-cfg.read("/sdmf_dir/config.ini")
-myOrchestrator = Orchestrator(spark, config=cfg)
-myOrchestrator.run()
+cfg.read("/handuflow_dir/config.ini")
+
+orchestrator = Orchestrator(spark, config=cfg)
+orchestrator.run()
 ```
+
+---
 
 ## Logging
 
-- Logs are first written to specified log directory in `config.ini`.
+* Logs are written to the directory defined in `config.ini`
+* Log retention and rotation are configurable
+* Execution-level and feed-level logs are supported
+
+---
+
+## License
+
+Apache License (Version 2.0, January 2004)
+<http://www.apache.org/licenses/>

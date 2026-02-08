@@ -3,9 +3,9 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "sdmf"
+name = "handuflow"
 version = "0.1.16"
-description = "SDMF - Standard Data Management Framework"
+description = "handuflow - Reliable data movement and evolution at scale"
 readme = "README.md"
 requires-python = ">=3.9"
 license = { file = "LICENSE" }
@@ -31,12 +31,12 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/hhandoo/sdmf-official"
-Repository = "https://github.com/hhandoo/sdmf-official"
-Documentation = "https://github.com/hhandoo/sdmf-official#readme"
-Changelog = "https://github.com/hhandoo/sdmf-official/blob/main/CHANGELOG.md"
-Issues = "https://github.com/hhandoo/sdmf-official/issues"
-License = "https://github.com/hhandoo/sdmf-official/blob/main/LICENSE"
+Homepage = "https://github.com/hhandoo/handuflow"
+Repository = "https://github.com/hhandoo/handuflow"
+Documentation = "https://github.com/hhandoo/handuflow#readme"
+Changelog = "https://github.com/hhandoo/handuflow/blob/main/CHANGELOG.md"
+Issues = "https://github.com/hhandoo/handuflow/issues"
+License = "https://github.com/hhandoo/handuflow/blob/main/LICENSE"
 
 
 [tool.setuptools.packages.find]

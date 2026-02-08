@@ -1,4 +1,4 @@
-name: Build & Publish SDMF to PyPI
+name: Build & Publish handuflow to PyPI
 
 on:
   push:
