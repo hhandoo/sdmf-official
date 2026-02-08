@@ -16,14 +16,14 @@ class LoggingConfig:
         self.level = logging.INFO
         self.run_id = run_id
         self.final_log_dir = os.path.join(
-            config["DEFAULT"]["log_base_path"],
-            config["DEFAULT"]["log_directory_name"],
+            config["LOGGING"]["log_base_path"],
+            config["LOGGING"]["log_directory_name"],
         )
-        temp = config["DEFAULT"]["temp_directory"]
+        temp = config["LOGGING"]["temp"]
         temp = temp.replace("/dbfs", "")
         self.temp_log_dir = os.path.join(
             temp,
-            config["DEFAULT"]["log_directory_name"],
+            config["LOGGING"]["log_directory_name"],
         )
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         self.log_file = os.path.join(
