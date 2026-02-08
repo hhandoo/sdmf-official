@@ -17,14 +17,14 @@ class SystemCleanup:
         self.master_specs = master_specs
         self.retention_days = int(config["DEFAULT"]["retention_policy_in_days"])
         self.final_log_dir = os.path.join(
-            config["DEFAULT"]["log_base_path"],
-            config["DEFAULT"]["log_directory_name"],
+            config["LOGGING"]["log_base_path"],
+            config["LOGGING"]["log_directory_name"],
         )
-        temp = config["DEFAULT"]["temp_directory"]
+        temp = config["LOGGING"]["temp"]
         temp = temp.replace("/dbfs", "")
         self.temp_log_dir = os.path.join(
             temp,
-            config["DEFAULT"]["log_directory_name"],
+            config["LOGGING"]["log_directory_name"],
         )
 
         self.outbound_dir = os.path.join(

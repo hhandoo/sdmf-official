@@ -6,7 +6,8 @@ spark-warehouse/
 metastore_db/
 temp/
 spark_warehouse/
-sdmf_outbound/
+outbound/
+dmc_temp/
 storage/
 # C extensions
 *.so
