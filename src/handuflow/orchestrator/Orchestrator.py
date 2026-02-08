@@ -67,8 +67,6 @@ class Orchestrator:
             self.logger.info("Generating lineage diagram...")
             self.__generate_lineage_diagram()
             self.logger.info("System has finished processing this batch.")
-            my_SystemCleanup = SystemCleanup(config=self.config, master_specs=self.validated_master_specs_df2)
-            my_SystemCleanup.run()
             self.logger.warning(
                 "Saving logs to specified final log directory, no logs after this point will be retained in *.log file."
             )
@@ -78,6 +76,9 @@ class Orchestrator:
             self.logger.info("Thanks for using handuflow.")
         else:
             self.logger.error("System is not ready, feeds will not be processed.")
+
+        my_SystemCleanup = SystemCleanup(config=self.config, master_specs=self.validated_master_specs_df2)
+        my_SystemCleanup.run()
 
     def __generate_lineage_diagram(self):
         try:
