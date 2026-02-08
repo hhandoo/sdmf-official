@@ -60,6 +60,6 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: v${{ steps.version.outputs.version }}
-          name: SDMF v${{ steps.version.outputs.version }}
+          name: handuflow v${{ steps.version.outputs.version }}
           body_path: release_notes.md
           files: dist/*

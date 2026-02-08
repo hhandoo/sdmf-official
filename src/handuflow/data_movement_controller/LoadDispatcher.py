@@ -36,10 +36,10 @@ class LoadDispatcher():
         return ", ".join(parts[:-1]) + (" and " + parts[-1] if len(parts) > 1 else parts[-1])
 
     def dispatch(self) -> LoadResult:
-        self.spark.sparkContext.setLocalProperty(
-            "spark.scheduler.pool",
-            f"group_{self.master_spec['parallelism_group_number']}"
-        )
+        # self.spark.sparkContext.setLocalProperty(
+        #     "spark.scheduler.pool",
+        #     f"group_{self.master_spec['parallelism_group_number']}"
+        # )
         start_time = time.time()
         # is_extraction = True if self.master_spec.get('data_flow_direction', "") == 'EXTRACTION' else False
         config = LoadConfig(
