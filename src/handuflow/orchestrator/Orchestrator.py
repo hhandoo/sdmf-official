@@ -14,6 +14,7 @@ from handuflow.result_generator.ResultGenerator import ResultGenerator
 from handuflow.validation.SystemLaunchValidator import SystemLaunchValidator
 from handuflow.data_quality.runner.FeedDataQualityRunner import FeedDataQualityRunner
 from handuflow.data_movement_controller.DataLoadController import DataLoadController
+from handuflow.system_cleanup.SystemCleanup import SystemCleanup
 from handuflow.data_flow_diagram_generator.DataFlowDiagramGenerator import (
     DataFlowDiagramGenerator,
 )
@@ -27,14 +28,16 @@ class Orchestrator:
         self.my_LoggingConfig = LoggingConfig(run_id=self.run_id, config=config)
         self.my_LoggingConfig.configure()
         self.logger = logging.getLogger(__name__)
-        self.logger.info(f"""handuflow - Reliable data movement and evolution at scale""")
+        self.logger.info(
+            f"""handuflow - Reliable data movement and evolution at scale"""
+        )
         self.spark = spark
         self.file_hunt_path = config["DEFAULT"]["file_hunt_path"]
         self.system_run_report = pd.DataFrame()
         self.logger.info(f"Current Run Id: {self.run_id}")
-        self.logger.info(
-            f'spark.scheduler.mode: {spark.sparkContext.getConf().get("spark.scheduler.mode")}'
-        )
+        # self.logger.info(
+        #     f'spark.scheduler.mode: {spark.sparkContext.getConf().get("spark.scheduler.mode")}'
+        # )
 
     def __system_prerequisites(self) -> bool:
         my_SystemLaunchValidator = SystemLaunchValidator(
@@ -49,11 +52,12 @@ class Orchestrator:
         )
         self.system_run_report = validation_result.results_df
         return validation_result.passed
-            
 
     def run(self):
         self.logger.info("Ensuring system readiness...")
-        self.logger.warning("All feeds from external sources will be dumped to the bronze (raw) layer, their validation may be skipped.")
+        self.logger.warning(
+            "All feeds from external sources will be dumped to the bronze (raw) layer, their validation may be skipped."
+        )
         is_system_ready = self.__system_prerequisites()
         if is_system_ready == True:
 
@@ -63,12 +67,13 @@ class Orchestrator:
             self.logger.info("Generating lineage diagram...")
             self.__generate_lineage_diagram()
             self.logger.info("System has finished processing this batch.")
+            my_SystemCleanup = SystemCleanup(config=self.config, master_specs=self.validated_master_specs_df2)
+            my_SystemCleanup.run()
             self.logger.warning(
                 "Saving logs to specified final log directory, no logs after this point will be retained in *.log file."
             )
             self.logger.info("==FINAL LOG==")
             self.my_LoggingConfig.move_logs_to_final_location()
-            self.my_LoggingConfig.cleanup_final_logs()
             self.logger.info("System has finished processing data.")
             self.logger.info("Thanks for using SDMF.")
         else:
@@ -86,7 +91,7 @@ class Orchestrator:
             raise SystemError(
                 "Something went wrong while generating Lineage diagram",
                 details={},
-                original_exception=e
+                original_exception=e,
             )
 
     def __validate_and_load(self):
@@ -97,11 +102,11 @@ class Orchestrator:
                 original_exception=None,
             )
         extraction_df = self.validated_master_specs_df[
-            self.validated_master_specs_df['data_flow_direction'] == 'SOURCE_TO_BRONZE'
+            self.validated_master_specs_df["data_flow_direction"] == "SOURCE_TO_BRONZE"
         ]
         load_results = []
         if len(extraction_df) != 0:
-            self.logger.info('Performing extraction as configured...')
+            self.logger.info("Performing extraction as configured...")
             my_DataLoadController = DataLoadController(
                 allowed_df=extraction_df, spark=self.spark, config=self.config
             )
@@ -109,7 +114,7 @@ class Orchestrator:
             res = my_DataLoadController.get_load_results()
             load_results.extend(res)
         self.validated_master_specs_df = self.validated_master_specs_df[
-            self.validated_master_specs_df['data_flow_direction'] != 'SOURCE_TO_BRONZE'
+            self.validated_master_specs_df["data_flow_direction"] != "SOURCE_TO_BRONZE"
         ]
         obj = FeedDataQualityRunner(
             self.spark, self.validated_master_specs_df.to_dict(orient="records")
@@ -146,4 +151,3 @@ class Orchestrator:
             self.logger.warning(
                 f"No non-Extraction feeds passed their defined validation. Please check the run report in SDMF outbound directory with run id: [{self.run_id}]"
             )
-            
