@@ -158,7 +158,7 @@ class DataFlowDiagramGenerator():
 
     def __title_cleanup_and_save(self):
         self.ax.set_title(
-            "SDMF - Feed Flow Diagram",
+            "handuflow - Feed Flow Diagram",
             fontsize=28,
             fontweight="bold",
             pad=30
